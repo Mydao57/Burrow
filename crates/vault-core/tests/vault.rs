@@ -30,7 +30,10 @@ fn roundtrip_preserves_entries() {
     assert_eq!(got.password, e.password);
     assert_eq!(got.url, e.url);
     assert_eq!(got.notes, e.notes);
-    assert_eq!(got.modified_at.unix_timestamp(), e.modified_at.unix_timestamp());
+    assert_eq!(
+        got.modified_at.unix_timestamp(),
+        e.modified_at.unix_timestamp()
+    );
 }
 
 #[test]
@@ -82,7 +85,10 @@ fn any_flipped_byte_is_detected() {
         let mut bytes = original.clone();
         bytes[i] ^= 0x01;
         fs::write(&path, &bytes).unwrap();
-        assert!(Vault::open(&path, PW).is_err(), "flip at byte {i} was not detected");
+        assert!(
+            Vault::open(&path, PW).is_err(),
+            "flip at byte {i} was not detected"
+        );
     }
 }
 
@@ -92,13 +98,27 @@ fn truncated_and_garbage_files_are_rejected() {
     let (path, _v) = new_vault(&dir);
     let original = fs::read(&path).unwrap();
 
-    for len in [0, 3, 8, HEADER_LEN - 1, HEADER_LEN, HEADER_LEN + 5, original.len() - 1] {
+    for len in [
+        0,
+        3,
+        8,
+        HEADER_LEN - 1,
+        HEADER_LEN,
+        HEADER_LEN + 5,
+        original.len() - 1,
+    ] {
         fs::write(&path, &original[..len]).unwrap();
-        assert!(Vault::open(&path, PW).is_err(), "truncation to {len} accepted");
+        assert!(
+            Vault::open(&path, PW).is_err(),
+            "truncation to {len} accepted"
+        );
     }
 
     fs::write(&path, b"this is definitely not a vault file at all, sorry").unwrap();
-    assert!(matches!(Vault::open(&path, PW).err().unwrap(), VaultError::InvalidMagic));
+    assert!(matches!(
+        Vault::open(&path, PW).err().unwrap(),
+        VaultError::InvalidMagic
+    ));
 }
 
 #[test]
@@ -121,7 +141,10 @@ fn absurd_kdf_params_in_file_are_rejected_before_derivation() {
     let mut bytes = fs::read(&path).unwrap();
     bytes[10..14].copy_from_slice(&u32::MAX.to_le_bytes()); // m_cost ~ 4 TiB
     fs::write(&path, &bytes).unwrap();
-    assert!(matches!(Vault::open(&path, PW).err().unwrap(), VaultError::InvalidKdfParams(_)));
+    assert!(matches!(
+        Vault::open(&path, PW).err().unwrap(),
+        VaultError::InvalidKdfParams(_)
+    ));
 }
 
 #[test]
@@ -159,8 +182,15 @@ fn external_modification_is_detected_and_not_overwritten() {
 
     a.add_entry(sample_entry("from A"));
     assert!(a.changed_on_disk().unwrap());
-    assert!(matches!(a.save().err().unwrap(), VaultError::ExternalModification));
-    assert_eq!(fs::read(&path).unwrap(), on_disk_after_b, "file must be untouched");
+    assert!(matches!(
+        a.save().err().unwrap(),
+        VaultError::ExternalModification
+    ));
+    assert_eq!(
+        fs::read(&path).unwrap(),
+        on_disk_after_b,
+        "file must be untouched"
+    );
 
     // Explicit override.
     a.save_force().unwrap();
@@ -175,7 +205,10 @@ fn deleted_file_counts_as_external_modification() {
     let dir = tempfile::tempdir().unwrap();
     let (path, mut v) = new_vault(&dir);
     fs::remove_file(&path).unwrap();
-    assert!(matches!(v.save().err().unwrap(), VaultError::ExternalModification));
+    assert!(matches!(
+        v.save().err().unwrap(),
+        VaultError::ExternalModification
+    ));
     v.save_force().unwrap();
     assert!(path.exists());
 }
@@ -201,7 +234,11 @@ fn save_is_atomic_and_leaves_no_temp_file() {
         .unwrap()
         .map(|e| e.unwrap().file_name().to_string_lossy().into_owned())
         .collect();
-    assert_eq!(names, vec!["test.burrow".to_string()], "unexpected files: {names:?}");
+    assert_eq!(
+        names,
+        vec!["test.burrow".to_string()],
+        "unexpected files: {names:?}"
+    );
 }
 
 #[cfg(unix)]
@@ -210,7 +247,10 @@ fn vault_file_is_private_on_unix() {
     use std::os::unix::fs::PermissionsExt;
     let dir = tempfile::tempdir().unwrap();
     let (path, _v) = new_vault(&dir);
-    assert_eq!(fs::metadata(&path).unwrap().permissions().mode() & 0o777, 0o600);
+    assert_eq!(
+        fs::metadata(&path).unwrap().permissions().mode() & 0o777,
+        0o600
+    );
 }
 
 #[test]
@@ -245,7 +285,10 @@ fn crud_and_search() {
 
     v.remove_entry(id).unwrap();
     assert!(v.get(id).is_none());
-    assert!(matches!(v.remove_entry(id).err().unwrap(), VaultError::EntryNotFound(_)));
+    assert!(matches!(
+        v.remove_entry(id).err().unwrap(),
+        VaultError::EntryNotFound(_)
+    ));
     assert!(matches!(
         v.update_entry(sample_entry("ghost")).err().unwrap(),
         VaultError::EntryNotFound(_)
@@ -277,7 +320,10 @@ fn export_copies_encrypted_file_and_refuses_self_or_stale() {
 
     // Re-exporting replaces the previous backup; exporting onto itself is refused.
     v.export_to(&dest).unwrap();
-    assert!(matches!(v.export_to(&path).err().unwrap(), VaultError::AlreadyExists));
+    assert!(matches!(
+        v.export_to(&path).err().unwrap(),
+        VaultError::AlreadyExists
+    ));
 
     let mut other = Vault::open(&path, PW).unwrap();
     other.save().unwrap(); // changes the file on disk behind `v`

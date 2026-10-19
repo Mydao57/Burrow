@@ -34,17 +34,39 @@ pub fn derive_key(password: &str, salt: &[u8; SALT_LEN], kdf: &KdfParams) -> Res
     Ok(key)
 }
 
-pub fn encrypt(key: &SecretKey, nonce: &[u8; NONCE_LEN], aad: &[u8], plaintext: &[u8]) -> Result<Vec<u8>> {
+pub fn encrypt(
+    key: &SecretKey,
+    nonce: &[u8; NONCE_LEN],
+    aad: &[u8],
+    plaintext: &[u8],
+) -> Result<Vec<u8>> {
     let cipher = XChaCha20Poly1305::new(Key::from_slice(key.as_ref()));
     cipher
-        .encrypt(XNonce::from_slice(nonce), Payload { msg: plaintext, aad })
+        .encrypt(
+            XNonce::from_slice(nonce),
+            Payload {
+                msg: plaintext,
+                aad,
+            },
+        )
         .map_err(|_| VaultError::EncryptionFailed)
 }
 
-pub fn decrypt(key: &SecretKey, nonce: &[u8; NONCE_LEN], aad: &[u8], ciphertext: &[u8]) -> Result<Zeroizing<Vec<u8>>> {
+pub fn decrypt(
+    key: &SecretKey,
+    nonce: &[u8; NONCE_LEN],
+    aad: &[u8],
+    ciphertext: &[u8],
+) -> Result<Zeroizing<Vec<u8>>> {
     let cipher = XChaCha20Poly1305::new(Key::from_slice(key.as_ref()));
     cipher
-        .decrypt(XNonce::from_slice(nonce), Payload { msg: ciphertext, aad })
+        .decrypt(
+            XNonce::from_slice(nonce),
+            Payload {
+                msg: ciphertext,
+                aad,
+            },
+        )
         .map(Zeroizing::new)
         .map_err(|_| VaultError::DecryptionFailed)
 }

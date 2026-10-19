@@ -53,18 +53,32 @@ impl KdfParams {
                 "time cost must be 1..={MAX_T_COST}"
             )));
         }
-        Ok(Self { m_cost, t_cost, parallelism })
+        Ok(Self {
+            m_cost,
+            t_cost,
+            parallelism,
+        })
     }
 
-    pub fn m_cost(&self) -> u32 { self.m_cost }
-    pub fn t_cost(&self) -> u32 { self.t_cost }
-    pub fn parallelism(&self) -> u32 { self.parallelism }
+    pub fn m_cost(&self) -> u32 {
+        self.m_cost
+    }
+    pub fn t_cost(&self) -> u32 {
+        self.t_cost
+    }
+    pub fn parallelism(&self) -> u32 {
+        self.parallelism
+    }
 }
 
 impl Default for KdfParams {
     /// 64 MiB, 3 passes, 1 lane.
     fn default() -> Self {
-        Self { m_cost: 64 * 1024, t_cost: 3, parallelism: 1 }
+        Self {
+            m_cost: 64 * 1024,
+            t_cost: 3,
+            parallelism: 1,
+        }
     }
 }
 

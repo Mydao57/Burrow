@@ -42,7 +42,14 @@ impl Vault {
         }
         let salt = crypto::random_salt();
         let key = crypto::derive_key(password, &salt, &kdf)?;
-        let mut vault = Vault { path, key, salt, kdf, entries: Vec::new(), fingerprint: None };
+        let mut vault = Vault {
+            path,
+            key,
+            salt,
+            kdf,
+            entries: Vec::new(),
+            fingerprint: None,
+        };
         vault.write(false)?;
         Ok(vault)
     }
@@ -66,8 +73,12 @@ impl Vault {
         })
     }
 
-    pub fn path(&self) -> &Path { &self.path }
-    pub fn entries(&self) -> &[Entry] { &self.entries }
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+    pub fn entries(&self) -> &[Entry] {
+        &self.entries
+    }
 
     pub fn get(&self, id: Uuid) -> Option<&Entry> {
         self.entries.iter().find(|e| e.id == id)
@@ -140,8 +151,10 @@ impl Vault {
         };
         let header_bytes = header.to_bytes();
         let plaintext = Zeroizing::new(
-            serde_json::to_vec(&VaultData { entries: self.entries.clone() })
-                .map_err(|e| VaultError::Serialization(e.to_string()))?,
+            serde_json::to_vec(&VaultData {
+                entries: self.entries.clone(),
+            })
+            .map_err(|e| VaultError::Serialization(e.to_string()))?,
         );
         let ciphertext = crypto::encrypt(&self.key, &header.nonce, &header_bytes, &plaintext)?;
 
@@ -174,9 +187,15 @@ impl Vault {
 
 /// Write to a temp file in the same directory, fsync, then rename over `path`.
 fn atomic_write(path: &Path, bytes: &[u8]) -> Result<()> {
-    let dir = path.parent().filter(|p| !p.as_os_str().is_empty()).unwrap_or(Path::new("."));
+    let dir = path
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or(Path::new("."));
     let name = path.file_name().ok_or_else(|| {
-        VaultError::Io(std::io::Error::new(std::io::ErrorKind::InvalidInput, "path has no file name"))
+        VaultError::Io(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "path has no file name",
+        ))
     })?;
     let mut tmp_name = std::ffi::OsString::from(".");
     tmp_name.push(name);

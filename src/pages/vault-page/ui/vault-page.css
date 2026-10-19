@@ -1,0 +1,2 @@
+.vault-page { height: 100vh; display: flex; flex-direction: column; }
+.vault-page__body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(240px, 320px) 1fr; }

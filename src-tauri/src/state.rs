@@ -85,7 +85,10 @@ impl AppState {
     }
 
     /// Runs `f` on the unlocked vault; counts as user activity.
-    pub fn with_vault<T>(&self, f: impl FnOnce(&mut Vault) -> Result<T, vault_core::VaultError>) -> CmdResult<T> {
+    pub fn with_vault<T>(
+        &self,
+        f: impl FnOnce(&mut Vault) -> Result<T, vault_core::VaultError>,
+    ) -> CmdResult<T> {
         let mut guard = lock(&self.vault);
         let vault = guard.as_mut().ok_or_else(CommandError::locked)?;
         self.touch();

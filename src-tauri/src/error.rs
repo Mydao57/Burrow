@@ -11,7 +11,10 @@ pub struct CommandError {
 
 impl CommandError {
     pub fn new(code: &'static str, message: impl Into<String>) -> Self {
-        Self { code, message: message.into() }
+        Self {
+            code,
+            message: message.into(),
+        }
     }
     pub fn locked() -> Self {
         Self::new("locked", "The vault is locked")

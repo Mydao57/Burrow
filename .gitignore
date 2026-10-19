@@ -4,3 +4,4 @@ dist
 *.burrow
 *.tmp
 .DS_Store
+/src-tauri/gen

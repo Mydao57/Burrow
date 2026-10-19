@@ -1,0 +1,5 @@
+.pwgen { border: 1px solid var(--border); border-radius: var(--radius); margin: 0 0 0.9rem; padding: 0.6rem 0.8rem; }
+.pwgen legend { color: var(--muted); font-size: 0.85rem; padding: 0 0.3rem; }
+.pwgen__length { display: flex; flex-direction: column; gap: 0.2rem; margin-bottom: 0.5rem; }
+.pwgen__sets { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-bottom: 0.6rem; }
+.pwgen__sets label { display: flex; gap: 0.35rem; align-items: center; }

@@ -15,7 +15,10 @@ pub struct Config {
 
 impl Default for Config {
     fn default() -> Self {
-        Self { last_vault_path: None, auto_lock_minutes: DEFAULT_AUTO_LOCK_MINUTES }
+        Self {
+            last_vault_path: None,
+            auto_lock_minutes: DEFAULT_AUTO_LOCK_MINUTES,
+        }
     }
 }
 

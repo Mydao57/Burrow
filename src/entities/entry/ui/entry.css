@@ -1,0 +1,10 @@
+.entry-row {
+  display: flex; flex-direction: column; gap: 0.1rem; width: 100%;
+  text-align: left; font: inherit; color: inherit; cursor: pointer;
+  padding: 0.6rem 0.9rem; border: 0; border-bottom: 1px solid var(--border);
+  background: transparent;
+}
+.entry-row:hover { background: var(--surface-2); }
+.entry-row--selected { background: var(--accent-soft); }
+.entry-row__title { font-weight: 600; }
+.entry-row__sub { font-size: 0.85rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

@@ -23,7 +23,14 @@ pub struct GeneratorOptions {
 
 impl Default for GeneratorOptions {
     fn default() -> Self {
-        Self { length: 20, lowercase: true, uppercase: true, digits: true, symbols: true, exclude_ambiguous: false }
+        Self {
+            length: 20,
+            lowercase: true,
+            uppercase: true,
+            digits: true,
+            symbols: true,
+            exclude_ambiguous: false,
+        }
     }
 }
 
@@ -38,17 +45,27 @@ pub fn generate_password(opts: &GeneratorOptions) -> Result<String> {
     ]
     .into_iter()
     .filter(|(on, _)| *on)
-    .map(|(_, s)| s.chars().filter(|c| !(opts.exclude_ambiguous && AMBIGUOUS.contains(*c))).collect())
+    .map(|(_, s)| {
+        s.chars()
+            .filter(|c| !(opts.exclude_ambiguous && AMBIGUOUS.contains(*c)))
+            .collect()
+    })
     .collect();
 
     if sets.is_empty() {
-        return Err(VaultError::InvalidGeneratorOptions("select at least one character set"));
+        return Err(VaultError::InvalidGeneratorOptions(
+            "select at least one character set",
+        ));
     }
     if opts.length < sets.len() {
-        return Err(VaultError::InvalidGeneratorOptions("length is shorter than the number of selected sets"));
+        return Err(VaultError::InvalidGeneratorOptions(
+            "length is shorter than the number of selected sets",
+        ));
     }
     if opts.length > MAX_LENGTH {
-        return Err(VaultError::InvalidGeneratorOptions("length exceeds the maximum of 256"));
+        return Err(VaultError::InvalidGeneratorOptions(
+            "length exceeds the maximum of 256",
+        ));
     }
 
     let pool: Vec<char> = sets.iter().flatten().copied().collect();

@@ -1,0 +1,43 @@
+.ui-btn {
+  font: inherit;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+.ui-btn:hover:not(:disabled) { border-color: var(--accent); }
+.ui-btn:disabled { opacity: 0.5; cursor: default; }
+.ui-btn--primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.ui-btn--danger { color: var(--danger); }
+.ui-btn--ghost { background: transparent; border-color: transparent; }
+
+.ui-field { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.9rem; }
+.ui-field label { font-size: 0.85rem; color: var(--muted); }
+.ui-field small { color: var(--muted); }
+.ui-field__row { display: flex; gap: 0.5rem; align-items: center; }
+.ui-field__row > input { flex: 1; min-width: 0; }
+.ui-field input, .ui-field textarea {
+  font: inherit;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+.ui-field input:focus, .ui-field textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+.ui-error { color: var(--danger); margin: 0.25rem 0 0.75rem; }
+
+.ui-modal__backdrop {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45);
+  display: grid; place-items: center; padding: 1rem; z-index: 10;
+}
+.ui-modal {
+  width: min(520px, 100%); max-height: 90vh; overflow: auto;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 2); padding: 1.25rem;
+}
+.ui-modal h2 { margin: 0 0 1rem; font-size: 1.15rem; }
+.ui-modal__actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem; }

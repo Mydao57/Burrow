@@ -68,19 +68,31 @@ impl ClipboardGuard {
 }
 
 #[cfg(target_os = "linux")]
-fn set_text_excluded_from_history(cb: &mut arboard::Clipboard, text: &str) -> Result<(), arboard::Error> {
+fn set_text_excluded_from_history(
+    cb: &mut arboard::Clipboard,
+    text: &str,
+) -> Result<(), arboard::Error> {
     use arboard::SetExtLinux;
     cb.set().exclude_from_history().text(text.to_owned())
 }
 
 #[cfg(target_os = "windows")]
-fn set_text_excluded_from_history(cb: &mut arboard::Clipboard, text: &str) -> Result<(), arboard::Error> {
+fn set_text_excluded_from_history(
+    cb: &mut arboard::Clipboard,
+    text: &str,
+) -> Result<(), arboard::Error> {
     use arboard::SetExtWindows;
-    cb.set().exclude_from_cloud().exclude_from_history().text(text.to_owned())
+    cb.set()
+        .exclude_from_cloud()
+        .exclude_from_history()
+        .text(text.to_owned())
 }
 
 #[cfg(target_os = "macos")]
-fn set_text_excluded_from_history(cb: &mut arboard::Clipboard, text: &str) -> Result<(), arboard::Error> {
+fn set_text_excluded_from_history(
+    cb: &mut arboard::Clipboard,
+    text: &str,
+) -> Result<(), arboard::Error> {
     use arboard::SetExtApple;
     cb.set().exclude_from_history().text(text.to_owned())
 }

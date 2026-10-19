@@ -85,7 +85,10 @@ fn summary(e: &Entry) -> EntrySummary {
 }
 
 fn vault_info(v: &Vault) -> VaultInfo {
-    VaultInfo { path: v.path().display().to_string(), entry_count: v.entries().len() }
+    VaultInfo {
+        path: v.path().display().to_string(),
+        entry_count: v.entries().len(),
+    }
 }
 
 // ---------- vault lifecycle ----------
@@ -103,13 +106,19 @@ pub fn vault_status(state: AppStateRef) -> VaultStatus {
 
 /// Native file dialog, run on the Rust side so the webview never chooses paths.
 #[tauri::command(async)]
-pub fn choose_vault_file(app: AppHandle, state: AppStateRef, mode: FileDialogMode) -> CmdResult<Option<String>> {
+pub fn choose_vault_file(
+    app: AppHandle,
+    state: AppStateRef,
+    mode: FileDialogMode,
+) -> CmdResult<Option<String>> {
     let builder = app.dialog().file().add_filter("Burrow vault", &["burrow"]);
     let picked = match mode {
         FileDialogMode::Open => builder.blocking_pick_file(),
         FileDialogMode::Create => builder.set_file_name("vault.burrow").blocking_save_file(),
     };
-    let Some(picked) = picked else { return Ok(None) };
+    let Some(picked) = picked else {
+        return Ok(None);
+    };
     let mut path: PathBuf = picked
         .into_path()
         .map_err(|e| CommandError::new("io", e.to_string()))?;
@@ -170,7 +179,10 @@ pub fn touch_activity(state: AppStateRef) {
 #[tauri::command(async)]
 pub fn set_auto_lock_minutes(state: AppStateRef, minutes: u64) -> CmdResult<()> {
     if minutes == 0 || minutes > 24 * 60 {
-        return Err(CommandError::new("invalid_options", "auto-lock delay must be 1 minute to 24 hours"));
+        return Err(CommandError::new(
+            "invalid_options",
+            "auto-lock delay must be 1 minute to 24 hours",
+        ));
     }
     state.set_auto_lock_minutes(minutes);
     Ok(())
@@ -181,7 +193,11 @@ pub fn set_auto_lock_minutes(state: AppStateRef, minutes: u64) -> CmdResult<()> 
 #[tauri::command(async)]
 pub fn list_entries(state: AppStateRef, query: Option<String>) -> CmdResult<Vec<EntrySummary>> {
     state.with_vault(|v| {
-        let mut list: Vec<_> = v.search(query.as_deref().unwrap_or("")).into_iter().map(summary).collect();
+        let mut list: Vec<_> = v
+            .search(query.as_deref().unwrap_or(""))
+            .into_iter()
+            .map(summary)
+            .collect();
         list.sort_by_key(|e| e.title.to_lowercase());
         Ok(list)
     })
@@ -191,7 +207,10 @@ pub fn list_entries(state: AppStateRef, query: Option<String>) -> CmdResult<Vec<
 pub fn get_entry(state: AppStateRef, id: Uuid) -> CmdResult<EntryDetail> {
     state.with_vault(|v| {
         let e = v.get(id).ok_or(vault_core::VaultError::EntryNotFound(id))?;
-        Ok(EntryDetail { summary: summary(e), notes: e.notes.clone() })
+        Ok(EntryDetail {
+            summary: summary(e),
+            notes: e.notes.clone(),
+        })
     })
 }
 
@@ -236,7 +255,10 @@ pub fn save_entry(state: AppStateRef, input: EntryInput, force: bool) -> CmdResu
     state.with_vault(|v| {
         let saved = match input.id {
             Some(id) => {
-                let mut e = v.get(id).cloned().ok_or(vault_core::VaultError::EntryNotFound(id))?;
+                let mut e = v
+                    .get(id)
+                    .cloned()
+                    .ok_or(vault_core::VaultError::EntryNotFound(id))?;
                 e.title = title;
                 e.username = input.username;
                 e.url = input.url;
@@ -258,7 +280,11 @@ pub fn save_entry(state: AppStateRef, input: EntryInput, force: bool) -> CmdResu
                 s
             }
         };
-        if force { v.save_force()? } else { v.save()? }
+        if force {
+            v.save_force()?
+        } else {
+            v.save()?
+        }
         Ok(saved)
     })
 }
@@ -267,7 +293,11 @@ pub fn save_entry(state: AppStateRef, input: EntryInput, force: bool) -> CmdResu
 pub fn delete_entry(state: AppStateRef, id: Uuid, force: bool) -> CmdResult<()> {
     state.with_vault(|v| {
         v.remove_entry(id)?;
-        if force { v.save_force() } else { v.save() }
+        if force {
+            v.save_force()
+        } else {
+            v.save()
+        }
     })
 }
 
@@ -295,8 +325,12 @@ pub fn export_vault(app: AppHandle, state: AppStateRef) -> CmdResult<Option<Stri
         .add_filter("Burrow vault", &["burrow"])
         .set_file_name("burrow-backup.burrow")
         .blocking_save_file();
-    let Some(picked) = picked else { return Ok(None) };
-    let dest = picked.into_path().map_err(|e| CommandError::new("io", e.to_string()))?;
+    let Some(picked) = picked else {
+        return Ok(None);
+    };
+    let dest = picked
+        .into_path()
+        .map_err(|e| CommandError::new("io", e.to_string()))?;
     state.with_vault(|v| v.export_to(&dest))?;
     Ok(Some(dest.display().to_string()))
 }
