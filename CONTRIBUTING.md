@@ -75,28 +75,25 @@ tests, fixtures or screenshots. Use obviously fake values.
 ## Branch policy: `release`
 
 `release` is the only long-lived branch. It is what gets built and shipped, so
-it is protected. The rules below are encoded in
-[`.github/rulesets/release.json`](.github/rulesets/release.json) and must be
-enabled in the repository settings (GitHub does not apply files from the repo
-automatically).
+it should be protected. The policy below is the target; it is configured by a
+maintainer in the repository settings (*Settings → Rules → Rulesets*), not by
+files in this repository.
 
-**Enforced by the ruleset**
+**Target rules for `release`**
 
 - No direct pushes: every change lands through a pull request.
-- No force-push and no deletion of `release`; history is linear (squash or
-  rebase merge, no merge commits).
+- No force-push and no deletion; linear history (squash or rebase merge).
 - Required status checks, with the branch up to date before merging:
-  `core`, `frontend`, `backend`.
-- Review required, stale approvals dismissed on new pushes, the latest push
-  approved by someone other than its author, all review conversations
-  resolved, and code-owner review for the paths listed in
-  [`CODEOWNERS`](.github/CODEOWNERS).
-- Rules apply to administrators too (no bypass actors).
+  `core`, `frontend`, `backend` (the jobs of [`ci.yml`](.github/workflows/ci.yml)).
+  Wait for them to be green before merging.
+- All review conversations resolved; stale approvals dismissed on new pushes.
+- Code-owner review for the paths listed in [`CODEOWNERS`](.github/CODEOWNERS).
+- No bypass for administrators.
 
 **Recommended additional repository settings**
 
-- *Require signed commits* on `release` (add `required_signatures` to the
-  ruleset once every maintainer has commit signing set up).
+- *Require signed commits* on `release` once every maintainer has commit
+  signing set up.
 - Require two-factor authentication for all collaborators.
 - Restrict who can push tags and create releases; build releases only from
   `release` and from CI.
@@ -106,12 +103,11 @@ automatically).
   (workflows here already declare `contents: read`), and require approval for
   workflows from first-time contributors.
 
-**Solo-maintainer note.** With a single maintainer, "one approval from someone
-other than the last pusher" would make it impossible to merge your own PRs.
-The shipped ruleset therefore requires a PR and passing checks but sets the
-required approvals to `0`. As soon as there is a second maintainer, raise
-`required_approving_review_count` to `1` and set `require_code_owner_review`
-and `require_last_push_approval` to `true` in the ruleset.
+**Solo-maintainer note.** With a single maintainer, requiring approval from
+someone other than the last pusher makes it impossible to merge your own PRs,
+so require a PR and passing checks with `0` required approvals. As soon as
+there is a second maintainer, require `1` approval, code-owner review and
+approval of the most recent push.
 
 ## Reporting security issues
 
