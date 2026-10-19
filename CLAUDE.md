@@ -77,6 +77,7 @@ so Argon2 and disk I/O do not run on the main thread.
 - The version lives in `package.json`, `Cargo.toml` (`[workspace.package]`) and `src-tauri/tauri.conf.json`;
   `pnpm check:version [vX.Y.Z]` checks they match. A `v*` tag triggers `.github/workflows/release.yml`
   (draft release with unsigned installers; see `CONTRIBUTING.md`). Never create or push tags unless asked.
+- The draft is published by the manual `Publish release` workflow (`scripts/publish-release.sh`; never publish or run it unless asked).
 - Local packaging check: `pnpm tauri build --debug --bundles deb` (or `appimage`).
 
 ## Git workflow

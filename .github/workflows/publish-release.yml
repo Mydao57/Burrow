@@ -1,0 +1,51 @@
+name: Publish release
+
+# Manual only: turns the DRAFT release of a tag (created by the Release workflow) into a
+# public release, after checking that the tag is on the release branch, that exactly one
+# draft exists, that the installers are attached and that they match SHA256SUMS.txt.
+# Tick "dry run" to run the checks without publishing.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag of the draft release to publish (for example v0.1.0)"
+        required: true
+        type: string
+      dry_run:
+        description: "Only run the checks, do not publish"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: publish draft release
+    runs-on: ubuntu-24.04
+    # The only write permission of this workflow.
+    permissions:
+      contents: write
+    steps:
+      - name: Run from the release branch only
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          [ "$REF" = refs/heads/release ] || { echo "::error::Run this workflow from the release branch (got $REF)"; exit 1; }
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history and tags, to check the tag against the release branch
+          persist-credentials: false
+
+      - name: Check and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: bash scripts/publish-release.sh
