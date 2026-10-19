@@ -1,0 +1,9 @@
+# Default owner
+*                         @Mydao57
+
+# Security-sensitive areas: always reviewed by a code owner
+/crates/vault-core/       @Mydao57
+/src-tauri/               @Mydao57
+/src/shared/api/          @Mydao57
+/.github/                 @Mydao57
+/CONTRIBUTING.md          @Mydao57
