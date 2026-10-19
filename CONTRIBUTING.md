@@ -121,7 +121,8 @@ approval of the most recent push.
 5. Review the draft (test at least one installer), then publish it by hand.
 
 To test the pipeline without releasing anything, run the `Release` workflow manually from the
-*Actions* tab: it builds the installers and keeps them as workflow artifacts, with no release created.
+*Actions* tab: it builds the installers and keeps them for 7 days as workflow artifacts (open the run, then
+*Artifacts* at the bottom of its summary page; one zip per system), with no release created.
 
 The installers are currently **unsigned** (no Apple or Windows certificates configured), and the actions
 in the workflows are referenced by tag, not pinned by commit SHA. Restrict who can push `v*` tags
