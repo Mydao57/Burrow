@@ -12,6 +12,7 @@
     "allow-create-vault",
     "allow-unlock-vault",
     "allow-reload-vault",
+    "allow-change-master-password",
     "allow-lock-vault",
     "allow-list-entries",
     "allow-get-entry",

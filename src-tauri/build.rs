@@ -6,6 +6,7 @@ const COMMANDS: &[&str] = &[
     "create_vault",
     "unlock_vault",
     "reload_vault",
+    "change_master_password",
     "lock_vault",
     "list_entries",
     "get_entry",

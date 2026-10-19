@@ -36,6 +36,7 @@ fn main() {
             commands::create_vault,
             commands::unlock_vault,
             commands::reload_vault,
+            commands::change_master_password,
             commands::lock_vault,
             commands::list_entries,
             commands::get_entry,

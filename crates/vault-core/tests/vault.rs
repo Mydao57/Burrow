@@ -332,3 +332,76 @@ fn export_copies_encrypted_file_and_refuses_self_or_stale() {
         VaultError::ExternalModification
     ));
 }
+
+#[test]
+fn verify_password_accepts_only_the_current_password() {
+    let dir = tempfile::tempdir().unwrap();
+    let (_path, v) = new_vault(&dir);
+    assert!(v.verify_password(PW).unwrap());
+    assert!(!v.verify_password("not the password").unwrap());
+    assert!(!v.verify_password("").unwrap());
+}
+
+#[test]
+fn change_password_reencrypts_with_new_salt() {
+    let dir = tempfile::tempdir().unwrap();
+    let (path, mut v) = new_vault(&dir);
+    let id = v.add_entry(sample_entry("keep me"));
+    v.save().unwrap();
+    let salt = |p: &std::path::Path| fs::read(p).unwrap()[22..38].to_vec();
+    let old_salt = salt(&path);
+
+    v.change_password("a brand new master password", fast_kdf())
+        .unwrap();
+
+    assert_ne!(salt(&path), old_salt, "salt must be regenerated");
+    assert!(v.verify_password("a brand new master password").unwrap());
+    assert!(!v.verify_password(PW).unwrap());
+    assert!(!v.changed_on_disk().unwrap());
+    // Further saves keep working with the new key.
+    v.add_entry(sample_entry("later"));
+    v.save().unwrap();
+    drop(v);
+
+    assert!(matches!(
+        Vault::open(&path, PW).err().unwrap(),
+        VaultError::DecryptionFailed
+    ));
+    let v = Vault::open(&path, "a brand new master password").unwrap();
+    assert_eq!(v.entries().len(), 2);
+    assert_eq!(v.get(id).unwrap().password, "s3cr3t-p@ss");
+}
+
+#[test]
+fn change_password_can_upgrade_kdf_params() {
+    let dir = tempfile::tempdir().unwrap();
+    let (path, mut v) = new_vault(&dir);
+    let stronger = KdfParams::new(64, 2, 1).unwrap();
+    v.change_password("another long password", stronger)
+        .unwrap();
+    assert_eq!(v.kdf_params(), stronger);
+    let v = Vault::open(&path, "another long password").unwrap();
+    assert_eq!(v.kdf_params(), stronger);
+}
+
+#[test]
+fn failed_change_password_leaves_vault_unchanged() {
+    let dir = tempfile::tempdir().unwrap();
+    let (path, mut a) = new_vault(&dir);
+    let mut b = Vault::open(&path, PW).unwrap();
+    b.add_entry(sample_entry("from B"));
+    b.save().unwrap();
+    let on_disk = fs::read(&path).unwrap();
+
+    let err = a
+        .change_password("new password that fails", fast_kdf())
+        .err()
+        .unwrap();
+    assert!(matches!(err, VaultError::ExternalModification));
+    assert_eq!(fs::read(&path).unwrap(), on_disk, "file must be untouched");
+    // `a` still uses the old key and salt.
+    assert!(a.verify_password(PW).unwrap());
+    assert!(!a.verify_password("new password that fails").unwrap());
+    a.save_force().unwrap();
+    assert!(Vault::open(&path, PW).is_ok());
+}
