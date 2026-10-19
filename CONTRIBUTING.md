@@ -109,6 +109,24 @@ so require a PR and passing checks with `0` required approvals. As soon as
 there is a second maintainer, require `1` approval, code-owner review and
 approval of the most recent push.
 
+## Releasing (maintainers)
+
+1. In a PR, bump the version in **all three places**: `package.json`, `[workspace.package]` in
+   `Cargo.toml`, and `src-tauri/tauri.conf.json`. `pnpm check:version` fails if they differ.
+2. Merge it into `release` once CI is green.
+3. Tag that commit and push the tag: `git tag -s vX.Y.Z && git push origin vX.Y.Z`
+   (a pre-release such as `v0.2.0-rc.1` is marked as a pre-release automatically).
+4. The `Release` workflow checks the tag against the versions and the `release` branch, runs the tests,
+   builds the macOS / Windows / Linux installers and attaches them to a **draft** release.
+5. Review the draft (test at least one installer), then publish it by hand.
+
+To test the pipeline without releasing anything, run the `Release` workflow manually from the
+*Actions* tab: it builds the installers and keeps them as workflow artifacts, with no release created.
+
+The installers are currently **unsigned** (no Apple or Windows certificates configured), and the actions
+in the workflows are referenced by tag, not pinned by commit SHA. Restrict who can push `v*` tags
+(*Settings → Rules → Rulesets → Tags*).
+
 ## Reporting security issues
 
 Do **not** open a public issue for a vulnerability. Use GitHub's private

@@ -72,6 +72,13 @@ so Argon2 and disk I/O do not run on the main thread.
 - Not yet verified: macOS, Windows, Wayland; clipboard-history exclusion outside Linux;
   UI flows for create/edit/delete/export/conflict dialog (core logic is tested).
 
+## Releases
+
+- The version lives in `package.json`, `Cargo.toml` (`[workspace.package]`) and `src-tauri/tauri.conf.json`;
+  `pnpm check:version [vX.Y.Z]` checks they match. A `v*` tag triggers `.github/workflows/release.yml`
+  (draft release with unsigned installers; see `CONTRIBUTING.md`). Never create or push tags unless asked.
+- Local packaging check: `pnpm tauri build --debug --bundles deb` (or `appimage`).
+
 ## Git workflow
 
 - `release` is the only long-lived branch. Work on a feature branch and open a PR against
