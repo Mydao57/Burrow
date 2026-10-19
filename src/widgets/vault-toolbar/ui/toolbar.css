@@ -1,8 +1,5 @@
-.toolbar {
-  display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 1rem;
-  border-bottom: 1px solid var(--border); background: var(--surface);
-}
-.toolbar__brand { display: flex; align-items: center; gap: 0.6rem; font-size: 1rem; letter-spacing: -0.02em; }
-.toolbar__logo { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--accent); color: var(--accent-text); }
+.toolbar { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); background: var(--surface); }
+.toolbar__brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; color: var(--accent); }
+.toolbar__brand strong { color: var(--text); }
 .toolbar__spacer { flex: 1; }
 .autolock { font-size: 0.84rem; white-space: nowrap; }

@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 
-import { EntryAvatar } from "@/entities/entry";
 import { CopyButton, RevealPassword } from "@/features/copy-secret";
 import { DeleteEntryButton } from "@/features/delete-entry";
 import { EditEntryButton } from "@/features/edit-entry";
 import { PasswordGenerator } from "@/features/generate-password";
 import { errorMessage, getEntry, type EntryDetail as EntryDetailDto } from "@/shared/api";
 import type { ConflictHandler } from "@/shared/lib";
-import { Icon } from "@/shared/ui";
+import { Logo } from "@/shared/ui";
 
 import "./entry-detail.css";
 
@@ -38,7 +37,7 @@ export function EntryDetail({ entryId, version, onChanged, onDeleted, onConflict
   if (!entry)
     return (
       <div className="entry-detail entry-detail--empty">
-        <Icon name="shield" size={40} />
+        <Logo size={44} />
         <p>Select an entry, or create a new one.</p>
       </div>
     );
@@ -46,7 +45,6 @@ export function EntryDetail({ entryId, version, onChanged, onDeleted, onConflict
   return (
     <article className="entry-detail">
       <header className="entry-detail__header">
-        <EntryAvatar title={entry.title} size="lg" />
         <div className="entry-detail__heading">
           <h1>{entry.title}</h1>
           <p className="muted">Updated {new Date(entry.modified_at).toLocaleString()}</p>
@@ -62,7 +60,7 @@ export function EntryDetail({ entryId, version, onChanged, onDeleted, onConflict
         </div>
       </header>
 
-      <dl className="entry-detail__card">
+      <dl className="entry-detail__fields">
         <div className="detail-row">
           <dt>Username</dt>
           <dd>

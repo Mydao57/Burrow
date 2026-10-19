@@ -1,7 +1,5 @@
 import type { EntrySummary } from "@/shared/api";
 
-import { EntryAvatar } from "./EntryAvatar";
-
 import "./entry.css";
 
 interface Props {
@@ -19,11 +17,8 @@ export function EntryRow({ entry, selected, onSelect }: Props) {
         onClick={() => onSelect(entry.id)}
         aria-current={selected}
       >
-        <EntryAvatar title={entry.title} />
-        <span className="entry-row__text">
-          <span className="entry-row__title">{entry.title}</span>
-          <span className="entry-row__sub">{entry.username || entry.url || "No username"}</span>
-        </span>
+        <span className="entry-row__title">{entry.title}</span>
+        <span className="entry-row__sub">{entry.username || entry.url || "No username"}</span>
       </button>
     </li>
   );

@@ -1,19 +1,15 @@
-.entry-detail { padding: 1.75rem 2rem; overflow: auto; max-width: 760px; width: 100%; }
-.entry-detail--empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; color: var(--text-faint); max-width: none; height: 100%; }
+.entry-detail { padding: 1.5rem 2rem; overflow: auto; max-width: 720px; width: 100%; }
+.entry-detail--empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem; color: var(--text-faint); max-width: none; height: 100%; }
 .entry-detail--empty p { margin: 0; }
-.entry-detail__header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.entry-detail__header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
 .entry-detail__heading { flex: 1; min-width: 0; }
-.entry-detail__heading h1 { margin: 0; font-size: 1.5rem; overflow-wrap: anywhere; }
+.entry-detail__heading h1 { margin: 0; font-size: 1.45rem; overflow-wrap: anywhere; }
 .entry-detail__heading p { margin: 0.1rem 0 0; font-size: 0.84rem; }
 .entry-detail__actions { display: flex; gap: 0.5rem; }
 
-.entry-detail__card {
-  margin: 0; background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
-}
-.detail-row { padding: 0.85rem 1.1rem; }
-.detail-row + .detail-row { border-top: 1px solid var(--border); }
-.detail-row dt { font-size: 0.78rem; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; }
-.detail-row dd { margin: 0.3rem 0 0; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; overflow-wrap: anywhere; }
+.entry-detail__fields { margin: 0; border-top: 1px solid var(--border); }
+.detail-row { display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid var(--border); min-height: 3rem; }
+.detail-row dt { font-size: 0.86rem; color: var(--text-muted); }
+.detail-row dd { margin: 0; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; min-width: 0; overflow-wrap: anywhere; }
 .detail-row__value { overflow-wrap: anywhere; }
 .detail-row__notes { white-space: pre-wrap; }
