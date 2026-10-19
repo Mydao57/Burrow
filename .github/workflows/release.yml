@@ -98,12 +98,11 @@ jobs:
 
       - name: Build installers
         id: tauri
+        # Code signing is not configured yet: the installers are UNSIGNED.
+        # macOS: add an env: block with APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD,
+        #        APPLE_SIGNING_IDENTITY, APPLE_ID, APPLE_PASSWORD, APPLE_TEAM_ID (Tauri signing docs).
+        # Windows: configure a certificate / signCommand in tauri.conf.json.
         uses: tauri-apps/tauri-action@v0
-        env:
-          # Code signing is not configured yet: the installers are UNSIGNED.
-          # macOS: set APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD, APPLE_SIGNING_IDENTITY,
-          #        APPLE_ID, APPLE_PASSWORD, APPLE_TEAM_ID (see the Tauri signing docs).
-          # Windows: configure a certificate / signCommand in tauri.conf.json.
         with:
           args: ${{ matrix.args }}
 
