@@ -28,9 +28,21 @@ export function CopyButton({ entryId, field }: Props) {
     }
   }
 
+  const label =
+    status === "copied" ? "Copied · clears in 20 s" : status === "error" ? (error ?? "Copy failed") : `Copy ${field}`;
+
   return (
-    <Button onClick={copy} title={status === "error" ? (error ?? undefined) : undefined}>
-      {status === "copied" ? "Copied · clears in 20 s" : status === "error" ? "Copy failed" : "Copy"}
+    <Button
+      size="sm"
+      variant="ghost"
+      iconOnly={status === "idle"}
+      icon={status === "copied" ? "check" : "copy"}
+      onClick={copy}
+      title={label}
+      aria-label={label}
+      className={status === "copied" ? "ui-btn--ok" : undefined}
+    >
+      {status === "copied" ? "Copied" : status === "error" ? "Failed" : null}
     </Button>
   );
 }

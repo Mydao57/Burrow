@@ -59,6 +59,7 @@ so Argon2 and disk I/O do not run on the main thread.
 - Features that need another feature's UI take it via props (see `renderPasswordTools`), composed in a widget.
 - CSP is `style-src 'self'`: no inline `style` attributes; use CSS files.
 - Import with the `@/` alias.
+- Styling uses design tokens (CSS variables) defined in `src/app/styles/global.css` for light and dark; never hard-code colours in slices. The theme (light/dark/system) lives in `features/theme-switcher` (`data-theme` on `<html>`, stored in `localStorage`). Icons are bundled JSX in `shared/ui/Icon.tsx`; no external fonts/assets.
 
 ## Testing notes
 

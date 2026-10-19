@@ -28,7 +28,7 @@ export function DeleteEntryButton({ entryId, title, onDeleted, onConflict }: Pro
 
   return (
     <>
-      <Button variant="danger" onClick={() => setOpen(true)}>
+      <Button variant="danger" icon="trash" onClick={() => setOpen(true)}>
         Delete
       </Button>
       {open && (

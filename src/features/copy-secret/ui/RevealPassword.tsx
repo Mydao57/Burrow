@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { errorMessage, revealPassword } from "@/shared/api";
 import { Button } from "@/shared/ui";
 
+import "./secret.css";
+
 const HIDE_AFTER_MS = 15_000;
 
 /** Shows the password only on demand, and hides (and forgets) it again after 15 s. */
@@ -29,10 +31,19 @@ export function RevealPassword({ entryId }: { entryId: string }) {
     }
   }
 
+  const shown = value !== null;
   return (
     <>
-      <code className="secret">{value ?? (error ?? "••••••••••")}</code>
-      {value === null ? <Button onClick={show}>Show</Button> : <Button onClick={() => setValue(null)}>Hide</Button>}
+      <code className="secret">{shown ? value : (error ?? "••••••••••••")}</code>
+      <Button
+        size="sm"
+        variant="ghost"
+        iconOnly
+        icon={shown ? "eye-off" : "eye"}
+        onClick={shown ? () => setValue(null) : show}
+        title={shown ? "Hide password" : "Show password (hides after 15 s)"}
+        aria-label={shown ? "Hide password" : "Show password"}
+      />
     </>
   );
 }

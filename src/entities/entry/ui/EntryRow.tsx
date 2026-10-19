@@ -18,7 +18,7 @@ export function EntryRow({ entry, selected, onSelect }: Props) {
         aria-current={selected}
       >
         <span className="entry-row__title">{entry.title}</span>
-        <span className="entry-row__sub">{entry.username || entry.url || "—"}</span>
+        <span className="entry-row__sub">{entry.username || entry.url || "No username"}</span>
       </button>
     </li>
   );

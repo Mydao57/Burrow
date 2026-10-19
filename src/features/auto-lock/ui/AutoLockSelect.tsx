@@ -15,7 +15,7 @@ export function AutoLockSelect() {
   const choices = CHOICES.includes(minutes) ? CHOICES : [...CHOICES, minutes].sort((a, b) => a - b);
 
   return (
-    <label className="muted">
+    <label className="muted autolock">
       Auto-lock{" "}
       <select
         value={minutes}
