@@ -120,7 +120,11 @@ approval of the most recent push.
 4. The `Release` workflow checks the tag against the versions and the `release` branch, runs the tests, and
    builds the macOS / Windows / Linux installers (read-only jobs that keep them as workflow artifacts). A
    separate `publish` job then attaches them, plus a `SHA256SUMS.txt`, to a **draft** release.
-5. Review the draft (test at least one installer), then publish it by hand.
+5. Review the draft (test at least one installer), then publish it: *Actions → Publish release → Run workflow*
+   (from the `release` branch) with the tag, for example `v0.1.0`. It checks that the tag is on `release`, that
+   exactly one draft exists, that the installers are attached and match `SHA256SUMS.txt`, then publishes it
+   (a pre-release is never marked as the latest). Tick *dry run* to run the checks without publishing.
+   Publishing from the *Releases* page by hand also works.
 
 If only the `publish` job fails (for instance a repository rule refuses the release), use *Re-run failed jobs*:
 the installers are reused, nothing is rebuilt. The workflow file used is the one at the tagged commit, so a fix
