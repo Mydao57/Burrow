@@ -106,7 +106,19 @@ the save is refused and you choose between **reloading** the disk version
 
 ## Installation
 
-Pre-built binaries are not published yet. Build from source.
+### Download
+
+Installers for macOS (universal), Windows and Linux (`.deb`, `.rpm`, AppImage) are attached to the
+[GitHub releases](../../releases) once a maintainer publishes one. They are **unsigned and unaudited**:
+
+- **macOS**: the app is not notarized. Open it with right-click, then *Open* (or allow it in *System
+  Settings, Privacy & Security*).
+- **Windows**: SmartScreen may warn about an unknown publisher (*More info*, then *Run anyway*).
+- **Linux**: install the `.deb`/`.rpm` with your package manager, or `chmod +x` the AppImage and run it.
+
+Prefer building from source if you want to know exactly what you run.
+
+### Build from source
 
 Requirements: Rust (stable), Node.js 20+, [pnpm](https://pnpm.io), and the
 [Tauri 2 system prerequisites](https://tauri.app/start/prerequisites/) for

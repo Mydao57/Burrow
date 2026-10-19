@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint:fsd": "steiger ./src",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "check:version": "node scripts/check-version.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",

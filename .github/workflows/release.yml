@@ -1,0 +1,114 @@
+name: Release
+
+# Pushing a tag like v0.2.0 builds installers for macOS, Windows and Linux and
+# attaches them to a DRAFT GitHub release, which a maintainer reviews and
+# publishes by hand. "Run workflow" (manual) builds the same installers as
+# downloadable workflow artifacts without creating a release, to test the pipeline.
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: verify
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history, to check the tag against the release branch
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Versions are consistent (and match the tag)
+        run: node scripts/check-version.mjs "${{ github.ref_type == 'tag' && github.ref_name || '' }}"
+      - name: Tag points to a commit on the release branch
+        if: github.ref_type == 'tag'
+        run: |
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/release \
+            || { echo "::error::Tag $GITHUB_REF_NAME is not on the release branch"; exit 1; }
+
+  build:
+    name: build (${{ matrix.name }})
+    needs: verify
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS (universal)
+            os: macos-latest
+            args: --target universal-apple-darwin
+            rust-targets: aarch64-apple-darwin,x86_64-apple-darwin
+          - name: Linux
+            os: ubuntu-22.04
+            args: ""
+            rust-targets: ""
+          - name: Windows
+            os: windows-latest
+            args: ""
+            rust-targets: ""
+    runs-on: ${{ matrix.os }}
+    # Only this job can write to the repository (to attach files to the draft release).
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libsoup-3.0-dev libgtk-3-dev \
+            libayatana-appindicator3-dev librsvg2-dev libxdo-dev libssl-dev build-essential
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-targets }}
+      - uses: Swatinem/rust-cache@v2
+
+      - run: pnpm install --frozen-lockfile
+
+      # Quality gate before anything is published.
+      - run: cargo test -p vault-core --locked
+      - run: pnpm test
+      - run: pnpm lint:fsd
+
+      - name: Build installers (and draft release)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Code signing is not configured yet: the installers are UNSIGNED.
+          # macOS: set APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD, APPLE_SIGNING_IDENTITY,
+          #        APPLE_ID, APPLE_PASSWORD, APPLE_TEAM_ID (see the Tauri signing docs).
+          # Windows: configure a certificate / signCommand in tauri.conf.json.
+        with:
+          # On a tag: create (or update) a draft release. Manual run: no release at all.
+          tagName: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+          releaseName: ${{ github.ref_type == 'tag' && format('Burrow {0}', github.ref_name) || '' }}
+          releaseBody: |
+            **Unsigned, unaudited build.** Verify what you download, keep a backup of your vault file,
+            and read the threat model and known limitations in the README before trusting it with
+            passwords you cannot afford to lose.
+
+            macOS: the app is not notarized; open it with right-click, then Open (or allow it in
+            System Settings, Privacy & Security). Windows: SmartScreen may warn about an unknown publisher.
+          releaseDraft: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          uploadWorkflowArtifacts: ${{ github.ref_type != 'tag' }}
+          args: ${{ matrix.args }}
