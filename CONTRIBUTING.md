@@ -114,8 +114,9 @@ approval of the most recent push.
 1. In a PR, bump the version in **all three places**: `package.json`, `[workspace.package]` in
    `Cargo.toml`, and `src-tauri/tauri.conf.json`. `pnpm check:version` fails if they differ.
 2. Merge it into `release` once CI is green.
-3. Tag that commit and push the tag: `git tag -s vX.Y.Z && git push origin vX.Y.Z`
-   (a pre-release such as `v0.2.0-rc.1` is marked as a pre-release automatically).
+3. Update your local `release` (`git checkout release && git pull`), then tag and push the tag:
+   `git tag -a vX.Y.Z -m "Burrow X.Y.Z" && git push origin vX.Y.Z` (use `-s` instead of `-a` if you have commit
+   signing configured). A pre-release such as `v0.2.0-rc.1` is marked as a pre-release automatically.
 4. The `Release` workflow checks the tag against the versions and the `release` branch, runs the tests, and
    builds the macOS / Windows / Linux installers (read-only jobs that keep them as workflow artifacts). A
    separate `publish` job then attaches them, plus a `SHA256SUMS.txt`, to a **draft** release.
