@@ -116,9 +116,14 @@ approval of the most recent push.
 2. Merge it into `release` once CI is green.
 3. Tag that commit and push the tag: `git tag -s vX.Y.Z && git push origin vX.Y.Z`
    (a pre-release such as `v0.2.0-rc.1` is marked as a pre-release automatically).
-4. The `Release` workflow checks the tag against the versions and the `release` branch, runs the tests,
-   builds the macOS / Windows / Linux installers and attaches them to a **draft** release.
+4. The `Release` workflow checks the tag against the versions and the `release` branch, runs the tests, and
+   builds the macOS / Windows / Linux installers (read-only jobs that keep them as workflow artifacts). A
+   separate `publish` job then attaches them, plus a `SHA256SUMS.txt`, to a **draft** release.
 5. Review the draft (test at least one installer), then publish it by hand.
+
+If only the `publish` job fails (for instance a repository rule refuses the release), use *Re-run failed jobs*:
+the installers are reused, nothing is rebuilt. The workflow file used is the one at the tagged commit, so a fix
+to the workflow needs the tag to be recreated on the new commit.
 
 To test the pipeline without releasing anything, run the `Release` workflow manually from the
 *Actions* tab: it builds the installers and keeps them for 7 days as workflow artifacts (open the run, then

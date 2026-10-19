@@ -1,9 +1,12 @@
 name: Release
 
-# Pushing a tag like v0.2.0 builds installers for macOS, Windows and Linux and
-# attaches them to a DRAFT GitHub release, which a maintainer reviews and
-# publishes by hand. "Run workflow" (manual) builds the same installers as
-# downloadable workflow artifacts without creating a release, to test the pipeline.
+# Pushing a tag like v0.2.0 builds installers for macOS, Windows and Linux, then a
+# separate job attaches them (plus SHA256SUMS.txt) to a DRAFT GitHub release, which a
+# maintainer reviews and publishes by hand. "Run workflow" (manual) builds the same
+# installers and keeps them as workflow artifacts, without creating a release.
+#
+# The build jobs are read-only and always keep their installers as artifacts, so a
+# failed publication never loses a build and can be re-run on its own.
 
 on:
   push:
@@ -66,9 +69,6 @@ jobs:
             args: ""
             rust-targets: ""
     runs-on: ${{ matrix.os }}
-    # Only this job can write to the repository (to attach files to the draft release).
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -96,34 +96,19 @@ jobs:
       # Rust tests stay per OS: file handling differs between platforms.
       - run: cargo test -p vault-core --locked
 
-      - name: Build installers (and draft release)
+      - name: Build installers
         id: tauri
         uses: tauri-apps/tauri-action@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Code signing is not configured yet: the installers are UNSIGNED.
           # macOS: set APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD, APPLE_SIGNING_IDENTITY,
           #        APPLE_ID, APPLE_PASSWORD, APPLE_TEAM_ID (see the Tauri signing docs).
           # Windows: configure a certificate / signCommand in tauri.conf.json.
         with:
-          # On a tag: create (or update) a draft release. Manual run: no release at all.
-          tagName: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
-          releaseName: ${{ github.ref_type == 'tag' && format('Burrow {0}', github.ref_name) || '' }}
-          releaseBody: |
-            **Unsigned, unaudited build.** Verify what you download, keep a backup of your vault file,
-            and read the threat model and known limitations in the README before trusting it with
-            passwords you cannot afford to lose.
-
-            macOS: the app is not notarized; open it with right-click, then Open (or allow it in
-            System Settings, Privacy & Security). Windows: SmartScreen may warn about an unknown publisher.
-          releaseDraft: true
-          prerelease: ${{ contains(github.ref_name, '-') }}
           args: ${{ matrix.args }}
 
-      # Manual runs create no release: keep the installers as downloadable workflow artifacts.
-      # (tauri-action itself skips uploads when there is no tag.)
+      # Keep the installers as workflow artifacts (also used by the publish job).
       - name: Collect installers
-        if: github.ref_type != 'tag'
         shell: bash
         env:
           ARTIFACT_PATHS: ${{ steps.tauri.outputs.artifactPaths }}
@@ -139,10 +124,58 @@ jobs:
           "
           ls -la installers
       - name: Upload installers
-        if: github.ref_type != 'tag'
         uses: actions/upload-artifact@v4
         with:
           name: burrow-${{ matrix.artifact }}
           path: installers/*
           if-no-files-found: error
           retention-days: 7
+
+  # Tag runs only: attach the installers to a draft release. Re-runnable on its own.
+  publish:
+    name: publish (draft release)
+    needs: build
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-24.04
+    # The only job that can write to the repository.
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: burrow-*
+          merge-multiple: true
+          path: dist
+
+      - name: Create (or update) the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          cd dist
+          ls -la
+          sha256sum -- * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+          cat > ../notes.md <<'EOF'
+          **Unsigned, unaudited build.** Verify what you download (`SHA256SUMS.txt` is attached),
+          keep a backup of your vault file, and read the threat model and known limitations in the
+          README before trusting it with passwords you cannot afford to lose.
+
+          macOS: the app is not notarized, so macOS blocks it the first time. On macOS 15 or later,
+          open it once, then allow it in System Settings, Privacy and Security ("Open Anyway");
+          on macOS 14 or earlier, right-click the app, then Open.
+          Windows: SmartScreen may warn about an unknown publisher.
+          EOF
+
+          prerelease=""
+          case "$TAG" in *-*) prerelease="--prerelease" ;; esac
+
+          existing="$(gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --json tagName --jq '.[] | select(.tagName == env.TAG) | .tagName')"
+          if [ -n "$existing" ]; then
+            echo "A release for $TAG already exists: updating its files."
+            gh release upload "$TAG" ./* --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" ./* --draft $prerelease --verify-tag \
+              --title "Burrow $TAG" --notes-file ../notes.md --repo "$GITHUB_REPOSITORY"
+          fi
