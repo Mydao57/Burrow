@@ -62,7 +62,9 @@ export function PasswordGenerator({ onGenerate }: Props) {
         ))}
       </div>
       <ErrorText message={error} />
-      <Button onClick={generate}>Generate</Button>
+      <Button size="sm" icon="sparkles" onClick={generate}>
+        Generate password
+      </Button>
     </fieldset>
   );
 }

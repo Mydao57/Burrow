@@ -1,9 +1,19 @@
-.entry-detail { padding: 1.25rem; overflow: auto; }
-.entry-detail__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
-.entry-detail__header h1 { margin: 0 0 1rem; font-size: 1.4rem; overflow-wrap: anywhere; }
+.entry-detail { padding: 1.75rem 2rem; overflow: auto; max-width: 760px; width: 100%; }
+.entry-detail--empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; color: var(--text-faint); max-width: none; height: 100%; }
+.entry-detail--empty p { margin: 0; }
+.entry-detail__header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.entry-detail__heading { flex: 1; min-width: 0; }
+.entry-detail__heading h1 { margin: 0; font-size: 1.5rem; overflow-wrap: anywhere; }
+.entry-detail__heading p { margin: 0.1rem 0 0; font-size: 0.84rem; }
 .entry-detail__actions { display: flex; gap: 0.5rem; }
-.entry-detail dl { margin: 0; }
-.entry-detail dt { color: var(--muted); font-size: 0.85rem; margin-top: 0.9rem; }
-.entry-detail dd { margin: 0.2rem 0 0; display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; overflow-wrap: anywhere; }
-.entry-detail__notes { white-space: pre-wrap; }
-.secret { font-family: ui-monospace, monospace; background: var(--surface-2); padding: 0.25rem 0.5rem; border-radius: var(--radius); user-select: all; }
+
+.entry-detail__card {
+  margin: 0; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.detail-row { padding: 0.85rem 1.1rem; }
+.detail-row + .detail-row { border-top: 1px solid var(--border); }
+.detail-row dt { font-size: 0.78rem; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+.detail-row dd { margin: 0.3rem 0 0; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; overflow-wrap: anywhere; }
+.detail-row__value { overflow-wrap: anywhere; }
+.detail-row__notes { white-space: pre-wrap; }

@@ -1,3 +1,5 @@
+import { Icon } from "@/shared/ui";
+
 import "./search.css";
 
 interface Props {
@@ -7,15 +9,17 @@ interface Props {
 
 export function SearchBox({ value, onChange }: Props) {
   return (
-    <input
-      className="search-box"
-      type="search"
-      placeholder="Search title, username, URL…"
-      aria-label="Search entries"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      autoComplete="off"
-      spellCheck={false}
-    />
+    <label className="search-box">
+      <Icon name="search" size={15} />
+      <input
+        type="search"
+        placeholder="Search…"
+        aria-label="Search entries"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        autoComplete="off"
+        spellCheck={false}
+      />
+    </label>
   );
 }

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 
+import { EntryAvatar } from "@/entities/entry";
 import { CopyButton, RevealPassword } from "@/features/copy-secret";
 import { DeleteEntryButton } from "@/features/delete-entry";
 import { EditEntryButton } from "@/features/edit-entry";
 import { PasswordGenerator } from "@/features/generate-password";
 import { errorMessage, getEntry, type EntryDetail as EntryDetailDto } from "@/shared/api";
 import type { ConflictHandler } from "@/shared/lib";
+import { Icon } from "@/shared/ui";
 
 import "./entry-detail.css";
 
@@ -33,12 +35,22 @@ export function EntryDetail({ entryId, version, onChanged, onDeleted, onConflict
   }, [entryId, version]);
 
   if (error) return <p className="ui-error entry-detail">{error}</p>;
-  if (!entry) return <p className="muted entry-detail">Select an entry.</p>;
+  if (!entry)
+    return (
+      <div className="entry-detail entry-detail--empty">
+        <Icon name="shield" size={40} />
+        <p>Select an entry, or create a new one.</p>
+      </div>
+    );
 
   return (
     <article className="entry-detail">
       <header className="entry-detail__header">
-        <h1>{entry.title}</h1>
+        <EntryAvatar title={entry.title} size="lg" />
+        <div className="entry-detail__heading">
+          <h1>{entry.title}</h1>
+          <p className="muted">Updated {new Date(entry.modified_at).toLocaleString()}</p>
+        </div>
         <div className="entry-detail__actions">
           <EditEntryButton
             entry={entry}
@@ -50,23 +62,31 @@ export function EntryDetail({ entryId, version, onChanged, onDeleted, onConflict
         </div>
       </header>
 
-      <dl>
-        <dt>Username</dt>
-        <dd>
-          <span>{entry.username || "—"}</span>
-          {entry.username && <CopyButton entryId={entry.id} field="username" />}
-        </dd>
-        <dt>Password</dt>
-        <dd>
-          <RevealPassword entryId={entry.id} />
-          <CopyButton entryId={entry.id} field="password" />
-        </dd>
-        <dt>URL</dt>
-        <dd>{entry.url || "—"}</dd>
-        <dt>Notes</dt>
-        <dd className="entry-detail__notes">{entry.notes || "—"}</dd>
-        <dt>Modified</dt>
-        <dd>{new Date(entry.modified_at).toLocaleString()}</dd>
+      <dl className="entry-detail__card">
+        <div className="detail-row">
+          <dt>Username</dt>
+          <dd>
+            <span className="detail-row__value">{entry.username || "—"}</span>
+            {entry.username && <CopyButton entryId={entry.id} field="username" />}
+          </dd>
+        </div>
+        <div className="detail-row">
+          <dt>Password</dt>
+          <dd>
+            <RevealPassword entryId={entry.id} />
+            <CopyButton entryId={entry.id} field="password" />
+          </dd>
+        </div>
+        <div className="detail-row">
+          <dt>URL</dt>
+          <dd>
+            <span className="detail-row__value">{entry.url || "—"}</span>
+          </dd>
+        </div>
+        <div className="detail-row">
+          <dt>Notes</dt>
+          <dd className="detail-row__notes">{entry.notes || "—"}</dd>
+        </div>
       </dl>
     </article>
   );

@@ -1,43 +1,58 @@
 .ui-btn {
-  font: inherit;
-  padding: 0.45rem 0.9rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text);
-  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  font: inherit; font-weight: 500; line-height: 1; white-space: nowrap;
+  padding: 0.55rem 0.9rem; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  box-shadow: var(--shadow-sm); cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast), transform var(--t-fast);
 }
-.ui-btn:hover:not(:disabled) { border-color: var(--accent); }
-.ui-btn:disabled { opacity: 0.5; cursor: default; }
+.ui-btn:hover:not(:disabled) { background: var(--surface-hover); border-color: var(--border-strong); }
+.ui-btn:active:not(:disabled) { transform: translateY(1px); }
+.ui-btn:disabled { opacity: 0.5; cursor: default; box-shadow: none; }
+.ui-btn--sm { padding: 0.4rem 0.65rem; font-size: 0.86rem; border-radius: var(--radius-sm); }
 .ui-btn--primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.ui-btn--primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
 .ui-btn--danger { color: var(--danger); }
-.ui-btn--ghost { background: transparent; border-color: transparent; }
+.ui-btn--danger:hover:not(:disabled) { background: var(--danger-soft); border-color: var(--danger); }
+.ui-btn--ghost { background: transparent; border-color: transparent; box-shadow: none; color: var(--text-muted); }
+.ui-btn--ghost:hover:not(:disabled) { background: var(--surface-hover); color: var(--text); border-color: transparent; }
+.ui-btn--icon { padding: 0.45rem; }
+.ui-btn--ok { color: var(--success); border-color: var(--success); background: var(--success-soft); }
 
-.ui-field { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.9rem; }
-.ui-field label { font-size: 0.85rem; color: var(--muted); }
-.ui-field small { color: var(--muted); }
+.ui-field { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+.ui-field label { font-size: 0.82rem; font-weight: 500; color: var(--text-muted); }
+.ui-field small { color: var(--text-faint); font-size: 0.8rem; }
 .ui-field__row { display: flex; gap: 0.5rem; align-items: center; }
 .ui-field__row > input { flex: 1; min-width: 0; }
 .ui-field input, .ui-field textarea {
-  font: inherit;
-  padding: 0.5rem 0.65rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
+  font: inherit; padding: 0.6rem 0.75rem; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--surface-sunken); color: var(--text);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
 }
-.ui-field input:focus, .ui-field textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.ui-field input::placeholder, .ui-field textarea::placeholder { color: var(--text-faint); }
+.ui-field input:focus, .ui-field textarea:focus {
+  outline: none; border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px var(--accent-ring);
+}
+.ui-field textarea { resize: vertical; }
 
-.ui-error { color: var(--danger); margin: 0.25rem 0 0.75rem; }
+.ui-error {
+  color: var(--danger); background: var(--danger-soft); border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem; margin: 0 0 1rem; font-size: 0.88rem;
+}
 
 .ui-modal__backdrop {
-  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45);
+  position: fixed; inset: 0; background: var(--backdrop); backdrop-filter: blur(6px);
   display: grid; place-items: center; padding: 1rem; z-index: 10;
+  animation: ui-fade var(--t-med);
 }
 .ui-modal {
-  width: min(520px, 100%); max-height: 90vh; overflow: auto;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: calc(var(--radius) * 2); padding: 1.25rem;
+  width: min(540px, 100%); max-height: 90vh; overflow: auto;
+  background: var(--surface-raised); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-lg);
+  animation: ui-pop var(--t-med);
 }
 .ui-modal h2 { margin: 0 0 1rem; font-size: 1.15rem; }
 .ui-modal__actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem; }
+
+@keyframes ui-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ui-pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }

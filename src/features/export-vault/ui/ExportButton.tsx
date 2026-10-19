@@ -16,8 +16,8 @@ export function ExportButton() {
   }
 
   return (
-    <Button onClick={run} title={message ?? "Save a copy of the encrypted vault file"}>
-      {message ?? "Export backup…"}
+    <Button variant="ghost" size="sm" icon="download" onClick={run} title={message ?? "Save a copy of the encrypted vault file"}>
+      {message ?? "Backup"}
     </Button>
   );
 }

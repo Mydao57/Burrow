@@ -34,6 +34,9 @@ export function EntryList({ version, selectedId, onSelect, onChanged, onConflict
         />
       </header>
       {error && <p className="ui-error">{error}</p>}
+      {entries.length > 0 && (
+        <div className="entry-list__count">{entries.length === 1 ? "1 entry" : `${entries.length} entries`}</div>
+      )}
       <ul className="entry-list__items">
         {entries.map((entry) => (
           <EntryRow key={entry.id} entry={entry} selected={entry.id === selectedId} onSelect={onSelect} />

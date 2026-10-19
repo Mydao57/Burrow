@@ -1,5 +1,10 @@
-.pwgen { border: 1px solid var(--border); border-radius: var(--radius); margin: 0 0 0.9rem; padding: 0.6rem 0.8rem; }
-.pwgen legend { color: var(--muted); font-size: 0.85rem; padding: 0 0.3rem; }
-.pwgen__length { display: flex; flex-direction: column; gap: 0.2rem; margin-bottom: 0.5rem; }
-.pwgen__sets { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-bottom: 0.6rem; }
-.pwgen__sets label { display: flex; gap: 0.35rem; align-items: center; }
+.pwgen {
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-sunken);
+  margin: 0 0 1rem; padding: 0.7rem 0.9rem 0.9rem;
+}
+.pwgen legend { color: var(--text-muted); font-size: 0.8rem; font-weight: 500; padding: 0 0.3rem; }
+.pwgen__length { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.6rem; font-size: 0.88rem; }
+.pwgen__length input { accent-color: var(--accent); }
+.pwgen__sets { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-bottom: 0.7rem; font-size: 0.88rem; }
+.pwgen__sets label { display: flex; gap: 0.4rem; align-items: center; cursor: pointer; }
+.pwgen__sets input { accent-color: var(--accent); }

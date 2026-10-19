@@ -1,5 +1,11 @@
 .search-box {
-  flex: 1; min-width: 0; font: inherit; padding: 0.5rem 0.65rem;
-  border-radius: var(--radius); border: 1px solid var(--border);
-  background: var(--surface); color: var(--text);
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.5rem;
+  padding: 0 0.7rem; border-radius: var(--radius); border: 1px solid var(--border);
+  background: var(--surface-sunken); color: var(--text-faint);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
 }
+.search-box:focus-within { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px var(--accent-ring); color: var(--text-muted); }
+.search-box input {
+  flex: 1; min-width: 0; font: inherit; color: var(--text); background: transparent; border: 0; outline: 0; padding: 0.55rem 0;
+}
+.search-box input::placeholder { color: var(--text-faint); }

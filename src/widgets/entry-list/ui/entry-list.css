@@ -1,4 +1,5 @@
-.entry-list { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--border); }
-.entry-list__header { display: flex; gap: 0.5rem; padding: 0.75rem; border-bottom: 1px solid var(--border); }
-.entry-list__items { list-style: none; margin: 0; padding: 0; overflow: auto; flex: 1; }
-.entry-list__empty { padding: 1rem; }
+.entry-list { display: flex; flex-direction: column; min-height: 0; background: var(--surface); border-right: 1px solid var(--border); }
+.entry-list__header { display: flex; gap: 0.5rem; padding: 0.75rem; }
+.entry-list__items { list-style: none; margin: 0; padding: 0 0.5rem 0.75rem; overflow: auto; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.entry-list__empty { padding: 2rem 1rem; text-align: center; }
+.entry-list__count { padding: 0 1rem 0.35rem; font-size: 0.78rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
