@@ -111,12 +111,14 @@ the save is refused and you choose between **reloading** the disk version
 Installers for macOS (universal), Windows and Linux (`.deb`, `.rpm`, AppImage) are attached to the
 [GitHub releases](../../releases) once a maintainer publishes one. They are **unsigned and unaudited**:
 
-- **macOS**: the app is not notarized. Open it with right-click, then *Open* (or allow it in *System
-  Settings, Privacy & Security*).
+- **macOS**: the app is not notarized, so macOS blocks it the first time. On macOS 15 or later, try to open it
+  once, then go to *System Settings, Privacy & Security* and click *Open Anyway*. On macOS 14 or earlier,
+  right-click the app, then *Open*.
 - **Windows**: SmartScreen may warn about an unknown publisher (*More info*, then *Run anyway*).
 - **Linux**: install the `.deb`/`.rpm` with your package manager, or `chmod +x` the AppImage and run it.
 
-Prefer building from source if you want to know exactly what you run.
+Each release also has a `SHA256SUMS.txt` (`shasum -a 256 -c SHA256SUMS.txt`). Prefer building from source if you want
+to know exactly what you run.
 
 ### Build from source
 
