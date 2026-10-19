@@ -132,6 +132,8 @@ jobs:
             const fs = require('fs'), path = require('path');
             fs.mkdirSync('installers', { recursive: true });
             for (const p of JSON.parse(process.env.ARTIFACT_PATHS)) {
+              // macOS lists Burrow.app, a directory (already inside the .dmg): skip it.
+              if (fs.statSync(p).isDirectory()) { console.log('skipping directory', p); continue; }
               fs.copyFileSync(p, path.join('installers', path.basename(p)));
             }
           "
