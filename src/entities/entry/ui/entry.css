@@ -1,10 +1,10 @@
 .entry-row {
-  display: flex; flex-direction: column; gap: 0.1rem; width: 100%;
+  display: flex; flex-direction: column; gap: 1px; width: 100%;
   text-align: left; font: inherit; color: inherit; cursor: pointer;
-  padding: 0.6rem 0.9rem; border: 0; border-bottom: 1px solid var(--border);
-  background: transparent;
+  padding: 0.55rem 0.9rem 0.55rem 1rem; border: 0; border-bottom: 1px solid var(--border); background: transparent;
+  transition: background var(--t-fast);
 }
-.entry-row:hover { background: var(--surface-2); }
-.entry-row--selected { background: var(--accent-soft); }
-.entry-row__title { font-weight: 600; }
-.entry-row__sub { font-size: 0.85rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-row:hover { background: var(--surface-hover); }
+.entry-row--selected, .entry-row--selected:hover { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.entry-row__title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-row__sub { font-size: 0.84rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

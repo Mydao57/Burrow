@@ -41,7 +41,9 @@ export function EditEntryButton({ entry, onSaved, onConflict, renderPasswordTool
 
   return (
     <>
-      <Button onClick={openEditor}>Edit</Button>
+      <Button icon="edit" onClick={openEditor}>
+        Edit
+      </Button>
       {open && (
         <Modal title="Edit entry" onClose={close}>
           <form

@@ -39,8 +39,8 @@ export function AddEntryButton({ onSaved, onConflict, renderPasswordTools }: Pro
 
   return (
     <>
-      <Button variant="primary" onClick={() => setOpen(true)}>
-        + Add
+      <Button variant="primary" icon="plus" onClick={() => setOpen(true)}>
+        New
       </Button>
       {open && (
         <Modal title="New entry" onClose={close}>

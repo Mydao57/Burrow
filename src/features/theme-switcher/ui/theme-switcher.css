@@ -1,0 +1,11 @@
+.theme-switcher {
+  display: inline-flex; padding: 2px; gap: 2px;
+  background: var(--surface-sunken); border: 1px solid var(--border); border-radius: var(--radius);
+}
+.theme-switcher__option {
+  display: grid; place-items: center; width: 28px; height: 24px;
+  border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.theme-switcher__option:hover { color: var(--text); }
+.theme-switcher__option--active { background: var(--surface-raised); color: var(--accent); box-shadow: 0 0 0 1px var(--border-strong); }

@@ -48,7 +48,15 @@ export function ChangePasswordButton() {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>{done ? "Password changed" : "Change master password…"}</Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        icon={done ? "check" : "key"}
+        onClick={() => setOpen(true)}
+        title="Change the master password"
+      >
+        {done ? "Password changed" : "Master password"}
+      </Button>
       {open && (
         <Modal title="Change master password" onClose={close}>
           <form onSubmit={submit}>
