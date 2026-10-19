@@ -1,0 +1,19 @@
+[workspace]
+resolver = "2"
+members = ["crates/vault-core"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Hugo THIEBAUT"]
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
+# Crypto crates are unusably slow unoptimized; keep dev/test builds fast.
+[profile.dev.package."*"]
+opt-level = 3
