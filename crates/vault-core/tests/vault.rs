@@ -264,7 +264,7 @@ fn entry_ids_are_unique_uuids() {
 }
 
 #[test]
-fn export_copies_encrypted_file_and_refuses_overwrite_or_stale() {
+fn export_copies_encrypted_file_and_refuses_self_or_stale() {
     let dir = tempfile::tempdir().unwrap();
     let (path, mut v) = new_vault(&dir);
     v.add_entry(sample_entry("x"));
@@ -275,7 +275,9 @@ fn export_copies_encrypted_file_and_refuses_overwrite_or_stale() {
     assert_eq!(fs::read(&dest).unwrap(), fs::read(&path).unwrap());
     assert_eq!(Vault::open(&dest, PW).unwrap().entries().len(), 1);
 
-    assert!(matches!(v.export_to(&dest).err().unwrap(), VaultError::AlreadyExists));
+    // Re-exporting replaces the previous backup; exporting onto itself is refused.
+    v.export_to(&dest).unwrap();
+    assert!(matches!(v.export_to(&path).err().unwrap(), VaultError::AlreadyExists));
 
     let mut other = Vault::open(&path, PW).unwrap();
     other.save().unwrap(); // changes the file on disk behind `v`

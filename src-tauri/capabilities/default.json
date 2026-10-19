@@ -1,0 +1,28 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissions for the main window: core events plus Burrow's own commands. No fs, shell, http or dialog access from the webview.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:event:default",
+    "allow-vault-status",
+    "allow-choose-vault-file",
+    "allow-create-vault",
+    "allow-unlock-vault",
+    "allow-reload-vault",
+    "allow-lock-vault",
+    "allow-list-entries",
+    "allow-get-entry",
+    "allow-reveal-password",
+    "allow-copy-password",
+    "allow-copy-username",
+    "allow-save-entry",
+    "allow-delete-entry",
+    "allow-generate-password",
+    "allow-export-vault",
+    "allow-touch-activity",
+    "allow-set-auto-lock-minutes"
+  ]
+}

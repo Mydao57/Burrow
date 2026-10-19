@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-reload-vault"
+description = "Enables the reload_vault command without any pre-configured scope."
+commands.allow = ["reload_vault"]
+
+[[permission]]
+identifier = "deny-reload-vault"
+description = "Denies the reload_vault command without any pre-configured scope."
+commands.deny = ["reload_vault"]

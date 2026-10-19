@@ -154,12 +154,15 @@ impl Vault {
         Ok(())
     }
 
-    /// Copies the encrypted file (as currently on disk) to `dest`.
-    /// Refuses to overwrite an existing file and to export a stale copy.
+    /// Copies the encrypted file (as currently on disk) to `dest`, replacing
+    /// any existing file there. Refuses to target the vault file itself and
+    /// to export a stale copy.
     pub fn export_to(&self, dest: impl AsRef<Path>) -> Result<()> {
         let dest = dest.as_ref();
-        if dest.exists() {
-            return Err(VaultError::AlreadyExists);
+        if let (Ok(a), Ok(b)) = (fs::canonicalize(dest), fs::canonicalize(&self.path)) {
+            if a == b {
+                return Err(VaultError::AlreadyExists);
+            }
         }
         let bytes = fs::read(&self.path)?;
         if self.fingerprint != Some(Fingerprint::of(&bytes)) {
