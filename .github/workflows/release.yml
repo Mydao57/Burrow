@@ -26,9 +26,11 @@ jobs:
         with:
           fetch-depth: 0 # full history, to check the tag against the release branch
           persist-credentials: false
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: pnpm
       - name: Versions are consistent (and match the tag)
         run: node scripts/check-version.mjs "${{ github.ref_type == 'tag' && github.ref_name || '' }}"
       - name: Tag points to a commit on the release branch
@@ -36,6 +38,10 @@ jobs:
         run: |
           git merge-base --is-ancestor "$GITHUB_SHA" origin/release \
             || { echo "::error::Tag $GITHUB_REF_NAME is not on the release branch"; exit 1; }
+      # OS-independent checks run once here, not in each of the three builds.
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm lint:fsd
 
   build:
     name: build (${{ matrix.name }})
@@ -46,14 +52,17 @@ jobs:
         include:
           - name: macOS (universal)
             os: macos-latest
+            artifact: macos-universal
             args: --target universal-apple-darwin
             rust-targets: aarch64-apple-darwin,x86_64-apple-darwin
           - name: Linux
             os: ubuntu-22.04
+            artifact: linux
             args: ""
             rust-targets: ""
           - name: Windows
             os: windows-latest
+            artifact: windows
             args: ""
             rust-targets: ""
     runs-on: ${{ matrix.os }}
@@ -84,12 +93,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Quality gate before anything is published.
+      # Rust tests stay per OS: file handling differs between platforms.
       - run: cargo test -p vault-core --locked
-      - run: pnpm test
-      - run: pnpm lint:fsd
 
       - name: Build installers (and draft release)
+        id: tauri
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,5 +118,29 @@ jobs:
             System Settings, Privacy & Security). Windows: SmartScreen may warn about an unknown publisher.
           releaseDraft: true
           prerelease: ${{ contains(github.ref_name, '-') }}
-          uploadWorkflowArtifacts: ${{ github.ref_type != 'tag' }}
           args: ${{ matrix.args }}
+
+      # Manual runs create no release: keep the installers as downloadable workflow artifacts.
+      # (tauri-action itself skips uploads when there is no tag.)
+      - name: Collect installers
+        if: github.ref_type != 'tag'
+        shell: bash
+        env:
+          ARTIFACT_PATHS: ${{ steps.tauri.outputs.artifactPaths }}
+        run: |
+          node -e "
+            const fs = require('fs'), path = require('path');
+            fs.mkdirSync('installers', { recursive: true });
+            for (const p of JSON.parse(process.env.ARTIFACT_PATHS)) {
+              fs.copyFileSync(p, path.join('installers', path.basename(p)));
+            }
+          "
+          ls -la installers
+      - name: Upload installers
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: burrow-${{ matrix.artifact }}
+          path: installers/*
+          if-no-files-found: error
+          retention-days: 7
