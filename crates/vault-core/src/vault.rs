@@ -73,6 +73,43 @@ impl Vault {
         })
     }
 
+    /// Checks `password` against the open vault by re-deriving the key from
+    /// the current salt and parameters (comparison is constant-time).
+    pub fn verify_password(&self, password: &str) -> Result<bool> {
+        let candidate = crypto::derive_key(password, &self.salt, &self.kdf)?;
+        let diff = candidate
+            .iter()
+            .zip(self.key.iter())
+            .fold(0u8, |acc, (a, b)| acc | (a ^ b));
+        Ok(diff == 0)
+    }
+
+    pub fn kdf_params(&self) -> KdfParams {
+        self.kdf
+    }
+
+    /// Re-encrypts the vault under `new_password` with a fresh salt and the
+    /// given KDF parameters, and saves it. The caller is responsible for
+    /// checking the current password first ([`Vault::verify_password`]).
+    ///
+    /// Fails with [`VaultError::ExternalModification`] if the file changed on
+    /// disk; in that case (and on any other error) the vault keeps its
+    /// previous key, so nothing is half-changed.
+    pub fn change_password(&mut self, new_password: &str, kdf: KdfParams) -> Result<()> {
+        let salt = crypto::random_salt();
+        let key = crypto::derive_key(new_password, &salt, &kdf)?;
+        let old_salt = std::mem::replace(&mut self.salt, salt);
+        let old_kdf = std::mem::replace(&mut self.kdf, kdf);
+        let old_key = std::mem::replace(&mut self.key, key);
+        if let Err(e) = self.write(false) {
+            self.salt = old_salt;
+            self.kdf = old_kdf;
+            self.key = old_key;
+            return Err(e);
+        }
+        Ok(())
+    }
+
     pub fn path(&self) -> &Path {
         &self.path
     }

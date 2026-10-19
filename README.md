@@ -99,8 +99,9 @@ the save is refused and you choose between **reloading** the disk version
 - Sync tools may create "conflicted copy" files next to the vault; Burrow does
   not look for them.
 - Only version 1 of the file format exists, with no migrations yet.
-- The Argon2 parameters are fixed at vault creation (64 MiB, 3 passes) and
-  there is no UI to change the master password or the parameters yet.
+- Argon2 parameters (64 MiB, 3 passes) are set when the vault is created. Changing the master
+  password re-encrypts with a fresh salt and the current defaults, but there is no UI to pick
+  other parameters. Old copies of the vault file (backups, other devices) keep the old password.
 - No browser extension, sharing, mobile app or built-in sync (out of scope).
 
 ## Installation

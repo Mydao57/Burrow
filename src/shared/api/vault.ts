@@ -28,6 +28,9 @@ export const unlockVault = (masterPassword: string) =>
 export const reloadVault = (masterPassword: string) =>
   call<VaultInfo>("reload_vault", { masterPassword });
 
+export const changeMasterPassword = (currentPassword: string, newPassword: string) =>
+  call<void>("change_master_password", { currentPassword, newPassword });
+
 export const lockVault = () => call<void>("lock_vault");
 
 export const touchActivity = () => call<void>("touch_activity");

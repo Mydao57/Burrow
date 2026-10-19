@@ -164,6 +164,35 @@ pub fn reload_vault(state: AppStateRef, master_password: String) -> CmdResult<Va
     Ok(info)
 }
 
+/// Minimum length enforced for a new master password (also checked by the UI).
+const MIN_MASTER_PASSWORD_LEN: usize = 12;
+
+/// Re-encrypts the vault under a new master password (fresh salt, current
+/// default Argon2 parameters). Requires the current password.
+#[tauri::command(async)]
+pub fn change_master_password(
+    state: AppStateRef,
+    current_password: String,
+    new_password: String,
+) -> CmdResult<()> {
+    let current = Zeroizing::new(current_password);
+    let new = Zeroizing::new(new_password);
+    if new.chars().count() < MIN_MASTER_PASSWORD_LEN {
+        return Err(CommandError::new(
+            "invalid_input",
+            format!(
+                "The new master password must have at least {MIN_MASTER_PASSWORD_LEN} characters"
+            ),
+        ));
+    }
+    state.with_vault(|v| {
+        if !v.verify_password(&current)? {
+            return Err(vault_core::VaultError::DecryptionFailed);
+        }
+        v.change_password(&new, KdfParams::default())
+    })
+}
+
 #[tauri::command(async)]
 pub fn lock_vault(state: AppStateRef) {
     state.lock_vault();
